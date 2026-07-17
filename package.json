@@ -8,7 +8,7 @@
     "nextcloud-collectives-mcp": "dist/index.js"
   },
   "scripts": {
-    "build": "tsup src/index.ts --format esm --target node22 --dts --clean",
+    "build": "tsdown",
     "prepare": "npm run build",
     "dev": "tsx src/index.ts",
     "test": "vitest run",
@@ -24,7 +24,7 @@
     "@types/node": "^22.10.2",
     "@vitest/coverage-v8": "^4.1.10",
     "msw": "^2.7.0",
-    "tsup": "^8.3.5",
+    "tsdown": "^0.22.9",
     "tsx": "^4.19.2",
     "typescript": "^5.7.2",
     "vitest": "^4.1.10"
