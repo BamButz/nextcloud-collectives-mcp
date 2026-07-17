@@ -36,7 +36,7 @@ Es ist kein manuelles Klonen oder Bauen nötig. Der MCP-Server kann direkt über
 }
 ```
 
-*Hinweis: Beim Start lädt `npx` das Repository herunter und baut es automatisch über das `prepare`-Skript im Hintergrund. Dies erfordert Node.js 18+.*
+*Hinweis: Beim Start lädt `npx` das Repository herunter und baut es automatisch über das `prepare`-Skript im Hintergrund.*
 
 ### Methode B: Manuelle lokale Installation (z.B. für Entwicklung)
 
