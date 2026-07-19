@@ -21,13 +21,17 @@ interface OcsEnvelope<T> {
 }
 
 export class OcsClient {
-  constructor(private readonly config: Config) {}
+  private readonly cachedAuthHeader: string;
 
-  private authHeader(): string {
+  constructor(private readonly config: Config) {
     const token = Buffer.from(`${this.config.username}:${this.config.appPassword}`).toString(
       "base64",
     );
-    return `Basic ${token}`;
+    this.cachedAuthHeader = `Basic ${token}`;
+  }
+
+  private authHeader(): string {
+    return this.cachedAuthHeader;
   }
 
   private async request<T>(method: string, path: string, body?: JsonValue): Promise<T> {

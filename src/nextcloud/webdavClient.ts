@@ -25,19 +25,21 @@ function messageForStatus(status: number): string {
 
 export class WebdavClient {
   private readonly davUserId: string;
+  private readonly cachedAuthHeader: string;
 
   constructor(
     private readonly config: Config,
     davUserId?: string,
   ) {
     this.davUserId = davUserId ?? config.username;
-  }
-
-  private authHeader(): string {
     const token = Buffer.from(`${this.config.username}:${this.config.appPassword}`).toString(
       "base64",
     );
-    return `Basic ${token}`;
+    this.cachedAuthHeader = `Basic ${token}`;
+  }
+
+  private authHeader(): string {
+    return this.cachedAuthHeader;
   }
 
   private url(path: string): string {
