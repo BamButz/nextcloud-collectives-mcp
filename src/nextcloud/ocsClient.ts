@@ -1,5 +1,6 @@
 import type { Config } from "../config.js";
 import type { JsonValue } from "./types.js";
+import { getBasicAuthHeader } from "./auth.js";
 
 const API_PREFIX = "/ocs/v2.php/apps/collectives/api/v1.0";
 
@@ -24,17 +25,18 @@ export class OcsClient {
   private readonly cachedAuthHeader: string;
 
   constructor(private readonly config: Config) {
-    const token = Buffer.from(`${this.config.username}:${this.config.appPassword}`).toString(
-      "base64",
-    );
-    this.cachedAuthHeader = `Basic ${token}`;
+    this.cachedAuthHeader = getBasicAuthHeader(this.config);
   }
 
   private authHeader(): string {
     return this.cachedAuthHeader;
   }
 
-  private async request<T>(method: string, path: string, body?: JsonValue): Promise<T> {
+  private async request<T>(
+    method: string,
+    path: string,
+    body?: JsonValue,
+  ): Promise<T> {
     const response = await fetch(`${this.config.baseUrl}${API_PREFIX}${path}`, {
       method,
       headers: {
