@@ -1,4 +1,5 @@
 import type { Config } from "../config.js";
+import { getBasicAuthHeader } from "./auth.js";
 
 export class WebdavError extends Error {
   constructor(
@@ -32,10 +33,7 @@ export class WebdavClient {
     davUserId?: string,
   ) {
     this.davUserId = davUserId ?? config.username;
-    const token = Buffer.from(`${this.config.username}:${this.config.appPassword}`).toString(
-      "base64",
-    );
-    this.cachedAuthHeader = `Basic ${token}`;
+    this.cachedAuthHeader = getBasicAuthHeader(this.config);
   }
 
   private authHeader(): string {
