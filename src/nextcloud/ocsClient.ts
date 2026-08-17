@@ -46,10 +46,24 @@ export class OcsClient {
       body: body !== undefined ? JSON.stringify(body) : undefined,
     });
 
-    const envelope = (await response.json()) as OcsEnvelope<T>;
+    let envelope: OcsEnvelope<T> | undefined;
+
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+      try {
+        envelope = (await response.json()) as OcsEnvelope<T>;
+      } catch {
+        // Failed to parse JSON, handled below
+      }
+    }
 
     if (!response.ok) {
-      throw new OcsError(envelope.ocs.meta.message, response.status);
+      const message = envelope?.ocs?.meta?.message || `HTTP Error ${response.status}: ${response.statusText}`;
+      throw new OcsError(message, response.status);
+    }
+
+    if (!envelope || !envelope.ocs || envelope.ocs.data === undefined) {
+      throw new OcsError("Invalid or missing JSON response from server", response.status);
     }
 
     return envelope.ocs.data;
