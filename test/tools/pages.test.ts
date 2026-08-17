@@ -157,6 +157,30 @@ describe("createPagesTools", () => {
     expect(putContent).toBe("# Updated");
   });
 
+
+  test("updatePageContent uses cached path for subsequent calls", async () => {
+    let putCount = 0;
+    let getCount = 0;
+
+    server.use(
+      http.get(`${BASE_URL}${API_PREFIX}/collectives/7/pages/42`, () => {
+        getCount++;
+        return ocsResponse({ page: samplePage });
+      }),
+      http.put(`${BASE_URL}${DAV_PREFIX}/${resolvePageFilePath(samplePage)}`, () => {
+        putCount++;
+        return new HttpResponse(null, { status: 204 });
+      }),
+    );
+
+    const tools = makeTools();
+    await tools.updatePageContent({ collectiveId: 7, pageId: 42, content: "# Updated 1" });
+    await tools.updatePageContent({ collectiveId: 7, pageId: 42, content: "# Updated 2" });
+
+    expect(getCount).toBe(1); // Cached, so only 1 GET request
+    expect(putCount).toBe(2);
+  });
+
   test("renamePage sends the new title", async () => {
     let capturedBody: { title: string } | null = null;
 
