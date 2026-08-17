@@ -48,6 +48,22 @@ describe("OcsClient", () => {
     expect(capturedOcsHeader).toBe("true");
   });
 
+  test("throws OcsError on a non-2xx response with invalid JSON", async () => {
+    server.use(
+      http.get(`${BASE_URL}${API_PREFIX}/collectives/broken`, () => {
+        return HttpResponse.text(
+          "<html><body>502 Bad Gateway</body></html>",
+          { status: 502 },
+        );
+      }),
+    );
+
+    const client = makeClient();
+
+    await expect(client.get("/collectives/broken")).rejects.toThrow(OcsError);
+    await expect(client.get("/collectives/broken")).rejects.toThrow(/HTTP Error 502/);
+  });
+
   test("throws OcsError with the envelope message on a non-2xx response", async () => {
     server.use(
       http.get(`${BASE_URL}${API_PREFIX}/collectives/999`, () => {
